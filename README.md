@@ -127,8 +127,6 @@ Does this command keep the robot dynamically recoverable?
 Is this command allowed for the current state, operating mode, actuator limits, and physical constraints?
 ```
 
-The model does not need to be as complex as the main controller. It should be smaller, conservative, and designed only for safety supervision.
-
 ---
 
 ## Scope
