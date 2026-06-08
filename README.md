@@ -90,13 +90,11 @@ This does not make it perfect or impossible to attack. The point is to reduce wh
 
 ---
 
-## Not Just a Limiter
+## Safety Logic
 
-Stability Shield is not meant to be a simple speed, current, or torque clamp.
+Stability Shield evaluates motor commands using SEBA-specific state information and a simplified safety model.
 
-For a balancing robot, blindly limiting a motor command can make the robot fall. A large command may be dangerous in one state but necessary for recovery in another.
-
-The shield evaluates the robot's state, operating mode, and command context, not only the raw command value.
+For a self-balancing robot, safety depends on state. The same motor command can be necessary for recovery in one moment and dangerous in another.
 
 Core signals may include:
 
@@ -105,19 +103,31 @@ Core signals may include:
 - wheel speed
 - requested motor command
 - measured motor current
-- battery voltage or available torque margin
+- battery voltage or torque margin
 - command timing
 - actuator saturation
 - operating mode
-- allowed speed or movement constraints
+- allowed speed, direction, or movement constraints
 
-Using these signals, Stability Shield can enforce two kinds of hardware safety checks:
+Stability Shield performs two kinds of checks:
 
-1. **Recoverability checks**  
-   Estimate whether the robot can still recover balance from the current state and proposed command.
+1. **Recoverability checks**
 
-2. **Physical action checks**  
-   Enforce allowed operating boundaries such as speed, direction, mode, actuator limits, and command timing.
+   These use SEBA's dynamics and state information to estimate whether the current state and proposed command keep the robot inside a recoverable balance envelope.
+
+2. **Physical action checks**
+
+   These enforce operating constraints such as speed, direction, mode, actuator limits, timing, and movement boundaries. Some checks may be simple limits; others may use the robot model when the safety of the action depends on state.
+
+The key questions are:
+
+```text
+Does this command keep the robot dynamically recoverable?
+
+Is this command allowed for the current state, operating mode, actuator limits, and physical constraints?
+```
+
+The model does not need to be as complex as the main controller. It should be smaller, conservative, and designed only for safety supervision.
 
 ---
 
